@@ -1,8 +1,8 @@
 from pygame import *
 back = (200, 255, 255)
-winf_width = 600
+win_width = 600
 win_height = 500
-window = display.set_mode((winf_width, win_height))
+window = display.set_mode((win_width, win_height))
 window.fill(back)
 
 class GameSprite(sprite.Sprite):
@@ -17,23 +17,23 @@ class GameSprite(sprite.Sprite):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
 class Player(GameSprite):
-    def update(self):
-        key_pressed = key.get_pressed()
+    key_pressed = key.get_pressed()
     def update_l(self):
         keys = key.get_pressed()
-        if keys[K_w] and self.rect.y > 5:
-            self.rect.y += self.speed
-        if keys[K_s] and self.rect.y > 5:
+        if keys[K_w] and self.rect.y < win_height:
             self.rect.y -= self.speed
+        if keys[K_s]:
+            self.rect.y += self.speed
     def update_r(self):
-        if keys[K_UP] and self.rect.y > 5:
-            self.rect.y += self.speed
-        if keys[K_DOWN] and self.rect.y > 5:
+        keys = key.get_pressed()
+        if keys[K_UP] and self.rect.y < win_height:
             self.rect.y -= self.speed
+        if keys[K_DOWN]:
+            self.rect.y += self.speed
         
-racket1 = Player('racket (1).png', 30,200,4,50,150)
-racket2 = Player('racket (1).png', 520,200,4,50,150)
-ball = GameSprite('tenis_ball (1).png', 200,200,4,50,50)
+racket1 = Player('racket (1).png', 30,200,20,100,5)
+racket2 = Player('racket (1).png', 520,200,20,100,5)
+ball = GameSprite('tenis_ball (1).png', 200,200,50,50,50)
 
 font.init()
 font = font.Font(None, 35)
@@ -59,27 +59,28 @@ while game:
             ball.rect.y += speed_y
     
     if finish != True:
+        window.fill((200,255,255))
         racket1.update_l()
         racket2.update_r()
         ball.rect.x += speed_x
         ball.rect.y += speed_y
-        if ball.rect.y > win_height - 50 or ball_rect.y < 0:
+        if ball.rect.y > win_height - 50 or ball.rect.y < 0:
             speed_y *= -1
 
         if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball):
             speed_x *= -1
-            spped_y *= -1
+            speed_y *= -1
 
-        if ball.rect.x > win.width:
+        if ball.rect.x > win_width:
             finish = True
             window.blit(lose2, (200,200))
 
-        if ball.rect.x < win.width:
+        if ball.rect.x < 0:
             finish = True
             window.blit(lose1, (200,200))
 
-    racket1.reset()
-    racket2.reset()
-    ball.reset()
+        racket1.reset()
+        racket2.reset()
+        ball.reset()
     display.update()
     clock.tick(FPS)
